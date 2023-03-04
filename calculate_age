@@ -1,0 +1,29 @@
+CREATE TABLE `people` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `birthdate` DATE NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DELIMITER //
+
+CREATE FUNCTION `calculate_age` (birthdate DATE) RETURNS INT
+BEGIN
+  DECLARE age INT;
+  SELECT FLOOR(DATEDIFF(CURRENT_DATE(), birthdate) / 365.25) INTO age;
+  RETURN age;
+END //
+
+DELIMITER ;
+
+SELECT name, calculate_age(birthdate) AS age FROM people;
+
+DESC people;
+
+INSERT INTO people(id,name,birthdate) VALUES(10011,'Cooper','2000-03-04');
+
+ALTER TABLE `people` ADD COLUMN `age` INT;
+
+UPDATE `people` SET `age` = calculate_age(`birthdate`);
+
+SELECT * FROM people WHERE id = 10011;
