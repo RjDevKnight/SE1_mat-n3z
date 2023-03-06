@@ -1,29 +1,15 @@
-CREATE TABLE `people` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  `birthdate` DATE NOT NULL,
-  PRIMARY KEY (`id`)
-);
-
-DELIMITER //
-
-CREATE FUNCTION `calculate_age` (birthdate DATE) RETURNS INT
+CREATE DEFINER=`root`@`localhost` FUNCTION `age_Calc`(birthday DATE) RETURNS varchar(50) CHARSET utf8mb4
 BEGIN
-  DECLARE age INT;
-  SELECT FLOOR(DATEDIFF(CURRENT_DATE(), birthdate) / 365.25) INTO age;
-  RETURN age;
-END //
-
-DELIMITER ;
-
-SELECT name, calculate_age(birthdate) AS age FROM people;
-
-DESC people;
-
-INSERT INTO people(id,name,birthdate) VALUES(10011,'Cooper','2000-03-04');
-
-ALTER TABLE `people` ADD COLUMN `age` INT;
-
-UPDATE `people` SET `age` = calculate_age(`birthdate`);
-
-SELECT * FROM people WHERE id = 10011;
+    DECLARE years INT;
+    DECLARE months INT;
+    DECLARE days INT;
+    DECLARE result VARCHAR(50);
+    
+    SET years = TIMESTAMPDIFF(YEAR, birthday, CURDATE());
+    SET months = TIMESTAMPDIFF(MONTH, birthday, CURDATE()) % 12;
+    SET days = TIMESTAMPDIFF(DAY, birthday + INTERVAL years YEAR + INTERVAL months MONTH, CURDATE());
+    
+    SET result = CONCAT(years, ' years, ', months, ' months, ', days, ' days');
+    
+    RETURN result;
+END
