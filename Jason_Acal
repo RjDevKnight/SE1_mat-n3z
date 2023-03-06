@@ -1,0 +1,34 @@
+CREATE DEFINER=`root`@`localhost` FUNCTION `get_age1`(BirthDate date) RETURNS varchar(255) CHARSET utf8mb4
+DETERMINISTIC
+BEGIN
+declare age_year int;
+declare age_month int;
+declare bulan varchar(255);
+declare tuig varchar(255);
+declare word_age varchar(255);
+declare age_day int;
+declare addyear float;
+declare addmonth float;
+declare adlaw varchar(255);
+set tuig =' Years and ';
+set bulan = ' Months ';
+set adlaw = ' days old ';
+ 
+set age_year = date_format(Now(),'%Y') - date_format(BirthDate, '%Y');
+set age_month = date_format(Now(), '%m') - date_format(BirthDate, '%m');
+set age_day = date_format(Now(), '%d') - date_format(BirthDate, '%d');
+ 
+if age_month < 0 then
+set age_year = age_year - 1;
+set age_month = age_month + 12;
+end if;
+ 
+if age_day < 0 then
+set age_month = age_month - 1;
+set age_day = age_day + day(last_day(date_format(Now(),'%Y-%m-01') + interval age_month month));
+end if;
+ 
+set word_age = concat(age_year, tuig, age_month, bulan, age_day, adlaw);
+ 
+RETURN word_age;
+END
